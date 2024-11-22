@@ -1,12 +1,18 @@
-function [net, info, train_predictions, val_predictions] = spdnet_train_afew(net, opts)
+function [net, info, train_predictions, predictions] = spdnet_train_afew(net, opts, X, Y)
 opts.errorLabels = {'top1e'};
-train = opts.train;
-val = opts.test;
-
-    
-for epoch=1:opts.numEpochs
+c=1;
+epoch=1;
+predictions={}
+for test_index=opts.numEpochs:length(X)
+    epoch=c;
     learningRate = opts.learningRate(epoch);
-    
+    Xtrain=X(c:test_index-1);
+    Xtest = X(test_index:test_index);
+    Ytrain =Y(c:test_index-1);
+    Ytest = Y(test_index:test_index);
+    train= struct('X', Xtrain, 'Y', Ytrain, 'B', Xtrain);
+    val=struct('X', Xtest, 'Y', Ytest, 'B', Xtest);
+    c=c+1;
      % fast-forward to last checkpoint
      modelPath = @(ep) fullfile(opts.dataDir, sprintf('net-epoch-%d.mat', ep));
      modelFigPath = fullfile(opts.dataDir, 'net-train.pdf') ;
@@ -23,10 +29,11 @@ for epoch=1:opts.numEpochs
          end
      end
     
-
-    [net,stats.train, train_predictions] = process_epoch(opts, epoch, train, learningRate, net) ;
-    [net,stats.val, val_predictions] = process_epoch(opts, epoch, val, 0, net) ;
+    
+    [net,stats.train, train_predictions] = process_epoch(opts, train, learningRate, net) ;
+    [net,stats.val, val_predictions] = process_epoch(opts, val, 0, net) ;
    
+    predictions{end+1} = val_predictions{1};
     % save
     evaluateMode = 0;
     
@@ -38,7 +45,7 @@ for epoch=1:opts.numEpochs
         info.(f).objective(epoch) = stats.(f)(2) / n ;
         info.(f).error(:,epoch) = stats.(f)(3:end) / n ;
     end
-    if ~evaluateMode, save(modelPath(epoch), 'net', 'info') ; end
+    %if ~evaluateMode, save(modelPath(epoch), 'net', 'info') ; end
 
     figure(1) ; clf ;
     hasError = 1 ;
@@ -76,10 +83,10 @@ for epoch=1:opts.numEpochs
     fprintf(' TEST-MSE: %.3f', stats.val(3)) ;
     fprintf(' TEST-loss: %.3f', stats.val(2)) ;
 end
+   
     
     
-    
-function [net,stats, array] = process_epoch(opts, epoch, dataset, learningRate, net)
+function [net,stats, array] = process_epoch(opts, dataset, learningRate, net)
 
 training = learningRate > 0 ;
 if training, mode = 'training' ; else mode = 'validation' ; end
@@ -93,6 +100,7 @@ else
 end
 
 batchSize = opts.batchSize;
+
 errors = 0;
 numDone = 0 ;
 array=cell(1,length(dataset));
