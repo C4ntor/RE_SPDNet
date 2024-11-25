@@ -18,7 +18,7 @@ opts.batchSize = 1;
 [X,Y] = dataset_builder(n_lags, opts.imdbPathtrain, compute_geohar);
 opts.data = struct('X', X, 'Y', Y);
 
-opts.training_index= 2800;  % - determines the number of (test) predictions to be made as length(X) - training_index
+opts.training_index= 2364;  % - determines the number of (test) predictions to be made as length(X) - training_index
 opts.numEpochs = opts.training_index+1;
 opts.gpus = [] ;
 opts.learningRate = 0.01*ones(1,opts.training_index);
