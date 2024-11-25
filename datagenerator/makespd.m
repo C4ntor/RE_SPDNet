@@ -8,7 +8,7 @@ function A_spd = makespd(A, epsilon)
         epsilon = 1e-6;  % Default small regularization value
     end
 
-    A = 0.5 * (A + A');  % Ensure symmetry
+    %A = 0.5 * (A + A');  % Ensure symmetry
     
     [Q, Lambda] = eig(A);
 

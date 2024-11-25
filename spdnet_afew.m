@@ -7,9 +7,9 @@ format long;
 %--ARGS--%
 opts.loss_function= "mse"; %other values: loge, frob
 n_lags=5;
-compute_geohar=true;
+compute_geohar=false;
 if compute_geohar==true
-    n_lags=3  %as the diag block will always contain 3 matrices of size nxn where n is the number of stocks
+    n_lags=3;  %as the diag block will always contain 3 matrices of size nxn where n is the number of stocks
 end
 data_filename = "RCOVReal.csv"; %RCOVReal.csv
 opts.dataDir = fullfile('./data') ;
