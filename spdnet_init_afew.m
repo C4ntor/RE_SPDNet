@@ -4,7 +4,7 @@ rng('default');
 rng(0) ;
 opts.layernum = 3;
 Winit = cell(opts.layernum,1);
-opts.datadim = [length(opts.data(1).X), 30, 20, length(opts.data(1).Y)];
+opts.datadim = [length(opts.data(1).X), 125, 75, length(opts.data(1).Y)];
 
 for iw = 1 : opts.layernum
     A = rand(opts.datadim(iw));
